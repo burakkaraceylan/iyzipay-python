@@ -45,7 +45,8 @@ class IyzipayResource:
 
     def get_http_header_v2(self, url, options, random_str, body_str):
         url = url.split('?')[0]
-        hashed_v2_str = self.generate_v2_hash(options['api_key'], url, options['secret_key'], random_str, body_str)
+        hashed_v2_str = self.generate_v2_hash(
+            options['api_key'], url, options['secret_key'], random_str, body_str)
         self.header.update({'Authorization': 'IYZWSv2 %s' % hashed_v2_str})
         return self.header
 
@@ -67,7 +68,8 @@ class IyzipayResource:
         return self.get_http_header_v1(None, options)
 
     def prepare_auth_string(self, options, random_str, pki_string):
-        hashed = self.generate_hash(options['api_key'], options['secret_key'], random_str, pki_string)
+        hashed = self.generate_hash(
+            options['api_key'], options['secret_key'], random_str, pki_string)
         return self.format_header_string(options['api_key'], hashed)
 
     def generate_random_string(self, size):
@@ -103,7 +105,8 @@ class IyzipayResource:
         pki_builder.append('gsmNumber', buyer.get('gsmNumber'))
         pki_builder.append('registrationDate', buyer.get('registrationDate'))
         pki_builder.append('lastLoginDate', buyer.get('lastLoginDate'))
-        pki_builder.append('registrationAddress', buyer.get('registrationAddress'))
+        pki_builder.append('registrationAddress',
+                           buyer.get('registrationAddress'))
         pki_builder.append('city', buyer.get('city'))
         pki_builder.append('country', buyer.get('country'))
         pki_builder.append('zipCode', buyer.get('zipCode'))
@@ -132,14 +135,16 @@ class IyzipayResource:
             pki_builder.append('category2', item.get('category2'))
             pki_builder.append('itemType', item.get('itemType'))
             pki_builder.append('subMerchantKey', item.get('subMerchantKey'))
-            pki_builder.append_price('subMerchantPrice', item.get('subMerchantPrice'))
+            pki_builder.append_price(
+                'subMerchantPrice', item.get('subMerchantPrice'))
             basket_items_pki.append(pki_builder.get_request_string())
         return basket_items_pki
 
     @staticmethod
     def payment_card_pki(payment_card):
         pki_builder = iyzipay.PKIBuilder('')
-        pki_builder.append('cardHolderName', payment_card.get('cardHolderName'))
+        pki_builder.append(
+            'cardHolderName', payment_card.get('cardHolderName'))
         pki_builder.append('cardNumber', payment_card.get('cardNumber'))
         pki_builder.append('expireYear', payment_card.get('expireYear'))
         pki_builder.append('expireMonth', payment_card.get('expireMonth'))
@@ -166,7 +171,8 @@ class IyzipayResource:
         installments_pki = []
         for item in installment_prices:
             pki_builder = iyzipay.PKIBuilder('')
-            pki_builder.append('installmentNumber', item.get('installmentNumber'))
+            pki_builder.append('installmentNumber',
+                               item.get('installmentNumber'))
             pki_builder.append_price('totalPrice', item.get('totalPrice'))
             installments_pki.append(pki_builder.get_request_string())
         return installments_pki
@@ -217,7 +223,8 @@ class Approval(IyzipayResource):
 
     def to_pki_string(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
-        pki_builder.append('paymentTransactionId', request.get('paymentTransactionId'))
+        pki_builder.append('paymentTransactionId',
+                           request.get('paymentTransactionId'))
         return pki_builder.get_request_string()
 
 
@@ -228,7 +235,8 @@ class Disapproval(IyzipayResource):
 
     def to_pki_string(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
-        pki_builder.append('paymentTransactionId', request.get('paymentTransactionId'))
+        pki_builder.append('paymentTransactionId',
+                           request.get('paymentTransactionId'))
         return pki_builder.get_request_string()
 
 
@@ -243,9 +251,12 @@ class CheckoutFormInitialize(IyzipayResource):
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
@@ -253,7 +264,8 @@ class CheckoutFormInitialize(IyzipayResource):
         pki_builder.append_price('paidPrice', request.get('paidPrice'))
         pki_builder.append('forceThreeDS', request.get('forceThreeDS'))
         pki_builder.append('cardUserKey', request.get('cardUserKey'))
-        pki_builder.append_array('enabledInstallments', request.get('enabledInstallments'))
+        pki_builder.append_array(
+            'enabledInstallments', request.get('enabledInstallments'))
         pki_builder.append('debitCardAllowed', request.get('debitCardAllowed'))
         return pki_builder.get_request_string()
 
@@ -286,11 +298,15 @@ class Payment(IyzipayResource):
         pki_builder.append('paymentChannel', request.get('paymentChannel'))
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('posOrderId', request.get('posOrderId'))
@@ -301,7 +317,8 @@ class Payment(IyzipayResource):
     def to_pki_string_retrieve(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
         pki_builder.append('paymentId', request.get('paymentId'))
-        pki_builder.append('paymentConversationId', request.get('paymentConversationId'))
+        pki_builder.append('paymentConversationId',
+                           request.get('paymentConversationId'))
         return pki_builder.get_request_string()
 
 
@@ -318,11 +335,15 @@ class ThreedsInitialize(IyzipayResource):
         pki_builder.append('paymentChannel', request.get('paymentChannel'))
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
@@ -347,7 +368,8 @@ class ThreedsPayment(IyzipayResource):
     def to_pki_string_retrieve(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
         pki_builder.append('paymentId', request.get('paymentId'))
-        pki_builder.append('paymentConversationId', request.get('paymentConversationId'))
+        pki_builder.append('paymentConversationId',
+                           request.get('paymentConversationId'))
         return pki_builder.get_request_string()
 
 
@@ -372,7 +394,8 @@ class Refund(IyzipayResource):
 
     def to_pki_string(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
-        pki_builder.append('paymentTransactionId', request.get('paymentTransactionId'))
+        pki_builder.append('paymentTransactionId',
+                           request.get('paymentTransactionId'))
         pki_builder.append_price('price', request.get('price'))
         pki_builder.append('ip', request.get('ip'))
         pki_builder.append('currency', request.get('currency'))
@@ -438,12 +461,16 @@ class BkmInitialize(IyzipayResource):
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
         pki_builder.append('paymentSource', request.get('paymentSource'))
-        pki_builder.append_array('enabledInstallments', request.get('enabledInstallments'))
+        pki_builder.append_array(
+            'enabledInstallments', request.get('enabledInstallments'))
         return pki_builder.get_request_string()
 
 
@@ -458,9 +485,12 @@ class PeccoInitialize(IyzipayResource):
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
@@ -490,9 +520,12 @@ class CheckoutFormInitializePreAuth(IyzipayResource):
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
@@ -500,7 +533,8 @@ class CheckoutFormInitializePreAuth(IyzipayResource):
         pki_builder.append_price('paidPrice', request.get('paidPrice'))
         pki_builder.append('forceThreeDS', request.get('forceThreeDS'))
         pki_builder.append('cardUserKey', request.get('cardUserKey'))
-        pki_builder.append_array('enabledInstallments', request.get('enabledInstallments'))
+        pki_builder.append_array(
+            'enabledInstallments', request.get('enabledInstallments'))
         return pki_builder.get_request_string()
 
 
@@ -521,11 +555,15 @@ class PaymentPreAuth(IyzipayResource):
         pki_builder.append('paymentChannel', request.get('paymentChannel'))
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
         return pki_builder.get_request_string()
@@ -533,7 +571,8 @@ class PaymentPreAuth(IyzipayResource):
     def to_pki_string_retrieve(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
         pki_builder.append('paymentId', request.get('paymentId'))
-        pki_builder.append('paymentConversationId', request.get('paymentConversationId'))
+        pki_builder.append('paymentConversationId',
+                           request.get('paymentConversationId'))
         return pki_builder.get_request_string()
 
 
@@ -564,11 +603,15 @@ class ThreedsInitializePreAuth(IyzipayResource):
         pki_builder.append('paymentChannel', request.get('paymentChannel'))
         pki_builder.append('basketId', request.get('basketId'))
         pki_builder.append('paymentGroup', request.get('paymentGroup'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('buyer', self.buyer_pki(request.get('buyer')))
-        pki_builder.append('shippingAddress', self.address_pki(request.get('shippingAddress')))
-        pki_builder.append('billingAddress', self.address_pki(request.get('billingAddress')))
-        pki_builder.append_array('basketItems', self.basket_pki(request.get('basketItems')))
+        pki_builder.append('shippingAddress', self.address_pki(
+            request.get('shippingAddress')))
+        pki_builder.append('billingAddress', self.address_pki(
+            request.get('billingAddress')))
+        pki_builder.append_array(
+            'basketItems', self.basket_pki(request.get('basketItems')))
         pki_builder.append('paymentSource', request.get('paymentSource'))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
@@ -582,7 +625,8 @@ class RefundChargedFromMerchant(IyzipayResource):
 
     def to_pki_string(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
-        pki_builder.append('paymentTransactionId', request.get('paymentTransactionId'))
+        pki_builder.append('paymentTransactionId',
+                           request.get('paymentTransactionId'))
         pki_builder.append_price('price', request.get('price'))
         pki_builder.append('ip', request.get('ip'))
         pki_builder.append('currency', request.get('currency'))
@@ -634,10 +678,12 @@ class SubMerchant(IyzipayResource):
         pki_builder.append('taxOffice', request.get('taxOffice'))
         pki_builder.append('contactName', request.get('contactName'))
         pki_builder.append('contactSurname', request.get('contactSurname'))
-        pki_builder.append('legalCompanyTitle', request.get('legalCompanyTitle'))
+        pki_builder.append('legalCompanyTitle',
+                           request.get('legalCompanyTitle'))
         pki_builder.append('swiftCode', request.get('swiftCode'))
         pki_builder.append('currency', request.get('currency'))
-        pki_builder.append('subMerchantExternalId', request.get('subMerchantExternalId'))
+        pki_builder.append('subMerchantExternalId',
+                           request.get('subMerchantExternalId'))
         pki_builder.append('identityNumber', request.get('identityNumber'))
         pki_builder.append('taxNumber', request.get('taxNumber'))
         pki_builder.append('subMerchantType', request.get('subMerchantType'))
@@ -653,7 +699,8 @@ class SubMerchant(IyzipayResource):
         pki_builder.append('taxOffice', request.get('taxOffice'))
         pki_builder.append('contactName', request.get('contactName'))
         pki_builder.append('contactSurname', request.get('contactSurname'))
-        pki_builder.append('legalCompanyTitle', request.get('legalCompanyTitle'))
+        pki_builder.append('legalCompanyTitle',
+                           request.get('legalCompanyTitle'))
         pki_builder.append('swiftCode', request.get('swiftCode'))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('subMerchantKey', request.get('subMerchantKey'))
@@ -663,7 +710,8 @@ class SubMerchant(IyzipayResource):
 
     def to_pki_string_retrieve(self, request):
         pki_builder = iyzipay.PKIBuilder(self.resource_pki(request))
-        pki_builder.append('subMerchantExternalId', request.get('subMerchantExternalId'))
+        pki_builder.append('subMerchantExternalId',
+                           request.get('subMerchantExternalId'))
         return pki_builder.get_request_string()
 
 
@@ -709,7 +757,8 @@ class BasicPayment(IyzipayResource):
         pki_builder.append('buyerId', request.get('buyerId'))
         pki_builder.append('buyerIp', request.get('buyerIp'))
         pki_builder.append('posOrderId', request.get('posOrderId'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('connectorName', request.get('connectorName'))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
@@ -730,7 +779,8 @@ class BasicPaymentPreAuth(IyzipayResource):
         pki_builder.append('buyerId', request.get('buyerId'))
         pki_builder.append('buyerIp', request.get('buyerIp'))
         pki_builder.append('posOrderId', request.get('posOrderId'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('connectorName', request.get('connectorName'))
         return pki_builder.get_request_string()
@@ -764,7 +814,8 @@ class BasicThreedsInitialize(IyzipayResource):
         pki_builder.append('buyerId', request.get('buyerId'))
         pki_builder.append('buyerIp', request.get('buyerIp'))
         pki_builder.append('posOrderId', request.get('posOrderId'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('connectorName', request.get('connectorName'))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
@@ -785,7 +836,8 @@ class BasicThreedsInitializePreAuth(IyzipayResource):
         pki_builder.append('buyerId', request.get('buyerId'))
         pki_builder.append('buyerIp', request.get('buyerIp'))
         pki_builder.append('posOrderId', request.get('posOrderId'))
-        pki_builder.append('paymentCard', self.payment_card_pki(request.get('paymentCard')))
+        pki_builder.append('paymentCard', self.payment_card_pki(
+            request.get('paymentCard')))
         pki_builder.append('currency', request.get('currency'))
         pki_builder.append('connectorName', request.get('connectorName'))
         pki_builder.append('callbackUrl', request.get('callbackUrl'))
@@ -829,7 +881,8 @@ class BasicBkmInitialize(IyzipayResource):
         pki_builder.append('buyerId', request.get('buyerId'))
         pki_builder.append('buyerIp', request.get('buyerIp'))
         pki_builder.append('posOrderId', request.get('posOrderId'))
-        pki_builder.append_array('installmentDetails', self.installment_details_pki(request.get('installmentDetails')))
+        pki_builder.append_array('installmentDetails', self.installment_details_pki(
+            request.get('installmentDetails')))
         return pki_builder.get_request_string()
 
 
@@ -838,7 +891,6 @@ class RetrievePaymentDetails(IyzipayResource):
         payment_conversation_id = str(request.get('paymentConversationId'))
         return self.connect('GET', '/v2/reporting/payment/details?paymentConversationId=' + payment_conversation_id,
                             options)
-
 
 
 class RetrieveTransactions(IyzipayResource):
@@ -933,7 +985,8 @@ class SubscriptionPlan(IyzipayResource):
         page = str(request.get('page') or 1)
         count = str(request.get('count') or 10)
         return self.connect('GET',
-                            '/v2/subscription/products/' + referenceCode + '/' + 'pricing-plans?page=' + page + '&count=' + count,
+                            '/v2/subscription/products/' + referenceCode + '/' +
+                            'pricing-plans?page=' + page + '&count=' + count,
                             options)
 
     def update(self, request, options):
@@ -989,6 +1042,7 @@ class SubscriptionCheckoutForm(IyzipayResource):
             raise Exception('token must be in request')
         return self.connect('POST', '/v2/subscription/checkoutform/', options, request)
 
+
 class SubscriptionCheckoutDirect(IyzipayResource):
     def create(self, request, options):
         return self.connect('POST', '/v2/subscription/initialize', options, request)
@@ -998,3 +1052,51 @@ class SubscriptionCheckoutDirect(IyzipayResource):
             raise Exception('token must be in request')
         return self.connect('POST', '/v2/subscription/checkoutform/', options, request)
 
+
+class Subscriptions(IyzipayResource):
+    def retrieve(self, request, options):
+        if request.get('subscriptionReferenceCode') is None:
+            raise Exception('subscriptionReferenceCode must be in request')
+        subscriptionReferenceCode = str(
+            request.get('subscriptionReferenceCode'))
+        return self.connect('GET', f'/v2/subscription/subscriptions/{subscriptionReferenceCode}', options, request)
+
+    def get(self, request, options):
+        page = str(request.get('page') or 1)
+        count = str(request.get('count') or 10)
+
+        return self.connect('GET', f'/v2/subscription/subscriptions?page={page}&count={count}', options, request)
+
+    def cancel(self, request, options):
+        if request.get('subscriptionReferenceCode') is None:
+            raise Exception('subscriptionReferenceCode must be in request')
+        subscriptionReferenceCode = str(
+            request.get('subscriptionReferenceCode'))
+
+        return self.connect('POST', f'/v2/subscription/subscriptions/{subscriptionReferenceCode}/cancel', options, request)
+
+    def activate(self, request, options):
+        if request.get('subscriptionReferenceCode') is None:
+            raise Exception('subscriptionReferenceCode must be in request')
+        subscriptionReferenceCode = str(
+            request.get('subscriptionReferenceCode'))
+
+        return self.connect('POST', f'/v2/subscription/subscriptions/{subscriptionReferenceCode}/activate', options, request)
+
+    def retry(self, request, options):
+        if request.get('paymentReferenceCode') is None:
+            raise Exception('paymentReferenceCode must be in request')
+
+        return self.connect('POST', f'/v2/subscription/operation/retry', options, request)
+
+    def upgrade(self, request, options):
+        if request.get('subscriptionReferenceCode') is None:
+            raise Exception('subscriptionReferenceCode must be in request')
+        subscriptionReferenceCode = str(
+            request.get('subscriptionReferenceCode'))
+
+        if request.get('newPricingPlanReferenceCode') is None:
+            raise Exception('newPricingPlanReferenceCode must be in request')
+
+        self.connect(
+            'POST', f'/v2/subscription/subscriptions/{subscriptionReferenceCode}/upgrade', options, request)
