@@ -12,7 +12,7 @@ request = {
     'locale': 'tr',
     'page': 1,
     'count': 10,
-    'customerReferenceCode': '7d1824c6-6eae-4b6f-84f2-ce7ede60e19c',
+    'subscriptionReferenceCode': '55a85da1-9b83-41a3-9fed-d270456da8ae'
 }
 
 report = iyzipay.Subscriptions().get(request, options)

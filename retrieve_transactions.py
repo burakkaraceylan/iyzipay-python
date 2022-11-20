@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import iyzipay
 
 options = {
@@ -9,9 +7,8 @@ options = {
 }
 
 request = {
-    'locale': 'tr',
-    'subscriptionReferenceCode': '8d614e87-0b10-4112-98c3-14b201c23f28',
+    'transactionDate': '2022-02-03',
+    'page': '1',
 }
-
-report = iyzipay.Subscriptions().retrieve(request, options)
+report = iyzipay.RetrieveTransactions().retrieve(request, options)
 print(report.read().decode('utf-8'))

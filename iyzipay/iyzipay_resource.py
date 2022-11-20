@@ -1038,9 +1038,10 @@ class SubscriptionCheckoutForm(IyzipayResource):
         return self.connect('POST', '/v2/subscription/checkoutform/initialize', options, request)
 
     def get(self, request, options):
-        if request.get('token') is None:
+        token = request.get('token')
+        if token is None:
             raise Exception('token must be in request')
-        return self.connect('POST', '/v2/subscription/checkoutform/', options, request)
+        return self.connect('GET', f'/v2/subscription/checkoutform/{token}', options, request)
 
 
 class SubscriptionCheckoutDirect(IyzipayResource):
@@ -1064,8 +1065,44 @@ class Subscriptions(IyzipayResource):
     def get(self, request, options):
         page = str(request.get('page') or 1)
         count = str(request.get('count') or 10)
+        subscriptionReferenceCode = request.get('subscriptionReferenceCode')
+        parentReferenceCode = request.get('parentReferenceCode')
+        customerReferenceCode = request.get('customerReferenceCode')
+        pricingPlanReferenceCode = request.get('pricingPlanReferenceCode')
+        subscriptionStatus = request.get('subscriptionStatus')
+        startDate = request.get('startDate')
+        endDate = request.get('endDate')
 
-        return self.connect('GET', f'/v2/subscription/subscriptions?page={page}&count={count}', options, request)
+        params = '?'
+
+        if page:
+            params += 'page=' + page + '&'
+
+        if count:
+            params += 'count=' + count + '&'
+
+        if subscriptionReferenceCode:
+            params += 'subscriptionReferenceCode=' + subscriptionReferenceCode + '&'
+
+        if parentReferenceCode:
+            params += 'parentReferenceCode=' + parentReferenceCode + '&'
+
+        if customerReferenceCode:
+            params += 'customerReferenceCode=' + customerReferenceCode + '&'
+
+        if pricingPlanReferenceCode:
+            params += 'pricingPlanReferenceCode=' + pricingPlanReferenceCode + '&'
+
+        if subscriptionStatus:
+            params += 'subscriptionStatus=' + subscriptionStatus + '&'
+
+        if startDate:
+            params += 'startDate=' + startDate + '&'
+
+        if endDate:
+            params += 'endDate=' + endDate + '&'
+
+        return self.connect('GET', f'/v2/subscription/subscriptions{params}', options, request)
 
     def cancel(self, request, options):
         if request.get('subscriptionReferenceCode') is None:

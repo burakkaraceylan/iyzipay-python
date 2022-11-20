@@ -10,10 +10,8 @@ options = {
 
 request = {
     'locale': 'tr',
-    'page': 1,
-    'count': 10,
-    'customerReferenceCode': '7d1824c6-6eae-4b6f-84f2-ce7ede60e19c',
+    'referenceCode': '8a8eaa5b-a2b0-4d88-a6d4-877d69ddd0ab'
 }
 
-report = iyzipay.Subscriptions().get(request, options)
+report = iyzipay.SubscriptionPlan().retrieve(request, options)
 print(report.read().decode('utf-8'))
